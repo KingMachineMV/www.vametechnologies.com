@@ -1,75 +1,45 @@
-.imghead{
-    height: 600px;
-    margin-top: -130px;
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f2f2f2;
+    font-family: Arial, sans-serif;
 }
 
-a:hover{
-    color: red !important;
+.construction-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 50px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-.slickfont{
-    font-size: 60px;
-}
-.buttonshop{
-    background-color: black;
-    border: none;
-    width: 150px;
-    padding: 10px;
-    color: white; 
-    margin-top: 20px;
-    font-weight: bold;
-    border-radius: none;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-.buttonshop:hover{
-    color: rgb(231, 218, 218);
-    box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
-    background-color: red;
-}
-.productimg{ 
-   margin-top: 20px;
-   height: 250px;
-   width: 250px;
-}
-.imgcoll{
 
-    height: 530px;
-    width: 450px;
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
 }
-.button2:hover{
-    background-color: red;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+
+p {
+    font-size: 1.2em;
+    color: #666;
+    margin: 10px 0;
 }
-.buttonshop1{
-    background-color: black;
-    border: none;
-    width: 200px;
-    padding: 10px;
-    color: white; 
-    margin-top: 20px;
-    font-weight: bold;
-    border-radius: none;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+    margin: 20px auto;
 }
-.buttonshop1:hover{
-    color: rgb(231, 218, 218);
-    box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
-    background-color: red;
-}
-.btn5product{
-    font-weight: bold;
-    color: white;
-    margin-top: 5px;
-    background-color: rgb(209, 22, 22);
-    border: none;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
-}
-.btn5product:hover{
-    background-color: rgb(226, 50, 50);
-    color: white;
-}
-.btncart{
-    margin-top: 10px;
-    background-color: #FF3EA5;
-    color: white;
-    box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
