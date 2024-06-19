@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitio en Construcción</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="construction-container">
+        <h1>Sitio en Construcción</h1>
+        <p>Estamos trabajando duro para traerte un nuevo sitio web.</p>
+        <p>¡Pronto estaremos en línea!</p>
+        <div class="loader"></div>
+    </div>
+</body>
+</html>
