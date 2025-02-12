@@ -3,15 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAME TECHNOLOGIES</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>VAME TECHNOLOGIES - Soluciones Informáticas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background-color: #1a365d;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1rem;
+            background-color: #2c5282;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+
+        nav a:hover {
+            background-color: #4299e1;
+            border-radius: 4px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                        url('tech-bg.jpg') center/cover;
+            color: white;
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        /* Servicios */
+        .servicios {
+            padding: 4rem 1rem;
+            background-color: #f7fafc;
+        }
+
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .servicio-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .servicio-card i {
+            font-size: 2.5rem;
+            color: #2b6cb0;
+            margin-bottom: 1rem;
+        }
+
+        /* Por qué nosotros */
+        .why-us {
+            padding: 4rem 1rem;
+            background-color: #ebf8ff;
+            text-align: center;
+        }
+
+        /* Contacto */
+        .contacto {
+            padding: 4rem 1rem;
+            background-color: #fff;
+        }
+
+        .contacto-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #2b6cb0;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #2c5282;
+        }
+
+        footer {
+            background-color: #1a365d;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="construction-container">
-        <h1>Sitio en Construcción</h1>
-        <p>Estamos trabajando duro para traerte un nuevo sitio web.</p>
-        <p>¡Pronto estaremos en línea!</p>
-        <div class="loader"></div>
-    </div>
+    <header>
+        <h1>VAME TECHNOLOGIES</h1>
+        <p>Soluciones Integrales en Informática</p>
+    </header>
+
+    <nav>
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+    </nav>
+
+    <section class="hero">
+        <h2>Expertos en Soluciones Tecnológicas</h2>
+        <p>Servicios profesionales de TI para empresas y particulares</p>
+        <button>Contactar Ahora</button>
+    </section>
+
+    <section class="servicios" id="servicios">
+        <h2>Nuestros Servicios</h2>
+        <div class="servicios-grid">
+            <div class="servicio-card">
+                <i class="fas fa-tools"></i>
+                <h3>Reparación de Computadoras</h3>
+                <p>Diagnóstico y reparación de hardware y software</p>
+            </div>
+            <div class="servicio-card">
+                <i class="fas fa-laptop-medical"></i>
+                <h3>Mantenimiento Preventivo</h3>
+                <p>Optimización y limpieza de equipos</p>
+            </div>
+            <div class="servicio-card">
+                <i class="fas fa-globe"></i>
+                <h3>Desarrollo Web</h3>
+                <p>Creación de sitios web profesionales</p>
+            </div>
+            <div class="servicio-card">
+                <i class="fas fa-network-wired"></i>
+                <h3>Redes y Conectividad</h3>
+                <p>Instalación y configuración de redes</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-us">
+        <h2>¿Por Qué Elegirnos?</h2>
+        <div class="servicios-grid">
+            <div class="servicio-card">
+                <h3>+15 Años de Experiencia</h3>
+                <p>Profesionales certificados</p>
+            </div>
+            <div class="servicio-card">
+                <h3>Soporte 24/7</h3>
+                <p>Asistencia técnica permanente</p>
+            </div>
+            <div class="servicio-card">
+                <h3>Precios Competitivos</h3>
+                <p>Presupuestos sin cargo</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="contacto" id="contacto">
+        <h2>Contacto</h2>
+        <form class="contacto-form">
+            <div class="form-group">
+                <input type="text" placeholder="Nombre" required>
+            </div>
+            <div class="form-group">
+                <input type="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="tel" placeholder="Teléfono">
+            </div>
+            <div class="form-group">
+                <textarea rows="5" placeholder="Mensaje" required></textarea>
+            </div>
+            <button type="submit">Enviar Mensaje</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2023 TecnoServicios - Todos los derechos reservados</p>
+    </footer>
 </body>
 </html>
