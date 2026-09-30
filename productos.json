@@ -1,0 +1,135 @@
+{
+  "actualizado": "2026-09-30",
+  "categorias": [
+    {
+      "nombre": "Laptops",
+      "icono": "💻"
+    },
+    {
+      "nombre": "PCs",
+      "icono": "🖥️"
+    },
+    {
+      "nombre": "Redes",
+      "icono": "📡"
+    },
+    {
+      "nombre": "Almacenamiento",
+      "icono": "💾"
+    },
+    {
+      "nombre": "Accesorios",
+      "icono": "⌨️"
+    },
+    {
+      "nombre": "Cables",
+      "icono": "🔌"
+    },
+    {
+      "nombre": "Seguridad",
+      "icono": "🛡️"
+    }
+  ],
+  "productos": [
+    {
+      "id": "1",
+      "name": "Laptop Dell Inspiron 15 i5 8GB 512GB",
+      "category": "Laptops",
+      "price": 4500,
+      "stock": 5,
+      "description": "Laptop ideal para trabajo y estudio, SSD rápido y pantalla Full HD.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "2",
+      "name": "Router TP-Link Archer C6 AC1200",
+      "category": "Redes",
+      "price": 350,
+      "stock": 12,
+      "description": "Router dual band con 5 antenas y control parental.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "3",
+      "name": "Switch TP-Link 8 Puertos Gigabit",
+      "category": "Redes",
+      "price": 280,
+      "stock": 8,
+      "description": "Switch no administrable de alto rendimiento para oficina.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "4",
+      "name": "Access Point Ubiquiti U6 Lite WiFi 6",
+      "category": "Redes",
+      "price": 850,
+      "stock": 6,
+      "description": "WiFi 6 profesional con gestión centralizada UniFi.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "5",
+      "name": "Cable UTP Cat6 305m Azul",
+      "category": "Cables",
+      "price": 650,
+      "stock": 10,
+      "description": "Bobina certificada Cat6 para instalaciones de red estructurada.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "6",
+      "name": "SSD Kingston 480GB SATA",
+      "category": "Almacenamiento",
+      "price": 380,
+      "stock": 15,
+      "description": "Disco sólido para acelerar tu PC o laptop, 500MB/s.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "7",
+      "name": "Memoria RAM 8GB DDR4 Laptop",
+      "category": "Accesorios",
+      "price": 220,
+      "stock": 20,
+      "description": "Módulo SODIMM DDR4 3200MHz compatible con la mayoría de laptops.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "8",
+      "name": "Teclado + Mouse Inalámbrico Logitech",
+      "category": "Accesorios",
+      "price": 180,
+      "stock": 25,
+      "description": "Combo inalámbrico silencioso y duradero, USB unificado.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "9",
+      "name": "UPS Forza 750VA",
+      "category": "Seguridad",
+      "price": 520,
+      "stock": 7,
+      "description": "Protege tus equipos contra apagones y picos de voltaje.",
+      "imageUrl": "",
+      "visible": true
+    },
+    {
+      "id": "10",
+      "name": "Cámara IP WiFi Exterior",
+      "category": "Seguridad",
+      "price": 320,
+      "stock": 9,
+      "description": "Visión nocturna, detección de movimiento y app móvil.",
+      "imageUrl": "",
+      "visible": true
+    }
+  ]
+}

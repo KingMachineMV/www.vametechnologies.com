@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel de inventario | Vame Technologies</title>
+  <meta name="theme-color" content="#0F172A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+  <style>
+    /* =========================================================
+       1. TOKENS Y BASE
+       ========================================================= */
+    :root {
+      --bg: #0F172A; --panel: #0B1D33; --navy: #0A2F4E; --blue-dark: #1E5A8A; --blue: #3B82F6; --blue-light: #60A5FA;
+      --wa: #25D366; --amber: #FBBF24; --danger: #F87171;
+      --muted: rgba(255, 255, 255, .68); --faint: rgba(255, 255, 255, .5); --line: rgba(255, 255, 255, .1);
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html:has(dialog[open]) { overflow: hidden; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: #fff; font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    h1, h2, p, ul { margin: 0; }
+    ul { padding: 0; list-style: none; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 2px solid var(--blue-light); outline-offset: 2px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .container { width: 100%; max-width: 1100px; margin-inline: auto; padding-inline: 16px; }
+    .hint { font-size: 12px; line-height: 1.5; color: var(--faint); }
+
+    /* =========================================================
+       2. COMPONENTES
+       ========================================================= */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding-inline: 18px; border: 1px solid transparent; border-radius: 999px; font-size: 13px; font-weight: 700; transition: background .15s, opacity .15s; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary { background: var(--wa); color: #000; }
+    .btn-blue { background: var(--blue-dark); color: #fff; }
+    .btn-blue:hover:not(:disabled) { background: var(--blue); }
+    .btn-ghost { background: rgba(255, 255, 255, .07); border-color: var(--line); font-weight: 600; }
+    .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, .13); }
+    .btn-danger { background: rgba(248, 113, 113, .12); border-color: rgba(248, 113, 113, .35); color: var(--danger); }
+    .btn-sm { height: 32px; padding-inline: 12px; font-size: 12px; }
+    .step { width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%; background: rgba(255, 255, 255, .08); line-height: 1; }
+    .step:hover:not(:disabled) { background: rgba(255, 255, 255, .16); }
+    .step:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* =========================================================
+       3. LAYOUT DEL PANEL
+       ========================================================= */
+    .top { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--line); background: rgba(15, 23, 42, .92); backdrop-filter: blur(12px); }
+    .top-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+    .top h1 { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .top small { display: block; font-size: 12px; color: var(--faint); }
+    .top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .dirty { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--amber); }
+    .dirty::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+    .banner { margin-top: 16px; padding: 12px 16px; border: 1px solid rgba(96, 165, 250, .35); border-radius: 16px; background: rgba(59, 130, 246, .08); font-size: 13px; color: #BFDBFE; }
+    .banner.warn { border-color: rgba(251, 191, 36, .35); background: rgba(251, 191, 36, .08); color: #FDE68A; }
+    .banner button { margin-left: 8px; padding: 0; border: 0; background: none; font-size: 13px; font-weight: 600; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+    .how { margin-top: 16px; font-size: 13px; line-height: 1.7; color: var(--muted); }
+    .how strong { color: #fff; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+    .stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, .04); }
+    .stat small { display: block; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--faint); }
+    .stat strong { font-size: 20px; font-weight: 800; }
+    .stat.warn strong { color: var(--amber); }
+    @media (min-width: 768px) { .stats { grid-template-columns: repeat(5, 1fr); } }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .toolbar input, .toolbar select { height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: #13233D; font-size: 14px; outline: none; }
+    .toolbar input { flex: 1 1 220px; }
+    .toolbar input:focus, .toolbar select:focus { border-color: var(--blue-dark); }
+    .toolbar .spacer { flex: 1 1 0; }
+
+    /* =========================================================
+       4. TABLA DE PRODUCTOS
+       ========================================================= */
+    .table-wrap { position: relative; margin-top: 16px; margin-bottom: 48px; overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, .03); }
+    table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 14px; }
+    th { padding: 12px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--line); }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    tr:last-child td { border-bottom: 0; }
+    tr.hidden-row td:not(.actions) { opacity: .45; }
+    .pcell { display: flex; align-items: center; gap: 12px; }
+    .pthumb { display: flex; flex: none; align-items: center; justify-content: center; width: 48px; height: 36px; overflow: hidden; border-radius: 8px; background: var(--navy); font-size: 20px; }
+    .pthumb img { width: 100%; height: 100%; object-fit: cover; }
+    .pname { font-weight: 600; }
+    .pmeta { font-size: 12px; color: var(--faint); }
+    .num { text-align: right; white-space: nowrap; }
+    .stock-cell { display: inline-flex; align-items: center; gap: 6px; }
+    .stock-cell output { min-width: 28px; text-align: center; font-weight: 600; }
+    .stock-cell output.zero { color: var(--danger); }
+    .actions { text-align: right; white-space: nowrap; }
+    .actions .btn + .btn { margin-left: 6px; }
+    input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); }
+    .empty { padding: 48px 16px; text-align: center; color: var(--muted); font-size: 14px; }
+    .empty strong { display: block; margin-bottom: 6px; font-size: 16px; color: #fff; }
+
+    /* =========================================================
+       5. DIÁLOGOS Y FORMULARIOS
+       ========================================================= */
+    dialog { width: min(540px, calc(100% - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); color: inherit; overflow: auto; }
+    dialog::backdrop { background: rgba(2, 6, 23, .65); }
+    .form { display: grid; gap: 14px; padding: 24px; }
+    .form h2 { font-size: 18px; font-weight: 800; }
+    .field label, .field .label { display: block; margin: 0 0 6px 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .field input, .field select, .field textarea, .cat-add input { width: 100%; padding: 0 14px; border: 1px solid var(--line); border-radius: 14px; background: #13233D; font-size: 16px; outline: none; }
+    .field input, .field select { height: 44px; }
+    .field textarea { min-height: 90px; padding: 12px 14px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus, .cat-add input:focus { border-color: var(--blue); }
+    .field.invalid input, .field.invalid select { border-color: var(--danger); }
+    .field-error { display: none; margin: 6px 0 0 4px; font-size: 12px; color: var(--danger); }
+    .field.invalid .field-error { display: block; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .check { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+
+    /* Categoría nueva dentro del formulario de producto */
+    .new-cat { display: grid; grid-template-columns: 76px 1fr; gap: 10px; margin-top: 10px; }
+    .new-cat input { text-align: left; }
+    .new-cat .icon-in { text-align: center; font-size: 22px; padding: 0; }
+
+    /* Cargador de imagen */
+    .uploader { display: grid; grid-template-columns: 144px 1fr; gap: 14px; align-items: center; }
+    .preview { display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; overflow: hidden; border: 1.5px dashed rgba(255, 255, 255, .22); border-radius: 14px; background: var(--navy); font-size: 12px; text-align: center; color: var(--faint); padding: 0; transition: border-color .15s, background .15s; }
+    .preview.drag { border-color: var(--blue-light); background: #123A64; }
+    .preview:not(:has(img)) { padding: 8px; }
+    .preview img { width: 100%; height: 100%; object-fit: cover; }
+    .uploader-actions { display: grid; gap: 8px; justify-items: start; }
+    .uploader-actions .row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .alt { margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .alt summary { cursor: pointer; width: fit-content; }
+    .alt input { margin-top: 8px; }
+
+    /* Gestor de categorías */
+    .cat-list { display: grid; gap: 8px; }
+    .cat-row { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 8px; align-items: center; }
+    .cat-row input { width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: #13233D; font-size: 15px; outline: none; }
+    .cat-row input:focus { border-color: var(--blue); }
+    .cat-row .icon-in { padding: 0; text-align: center; font-size: 20px; }
+    .cat-count { min-width: 72px; font-size: 12px; color: var(--faint); text-align: right; white-space: nowrap; }
+    .cat-tools { display: flex; gap: 4px; align-items: center; }
+    .cat-add { display: grid; grid-template-columns: 52px 1fr auto; gap: 8px; align-items: center; padding-top: 14px; border-top: 1px solid var(--line); }
+    .cat-add input { height: 40px; border-radius: 12px; font-size: 15px; }
+    .cat-add .icon-in { padding: 0; text-align: center; font-size: 20px; }
+    .icon-in::-webkit-calendar-picker-indicator { display: none !important; }
+    .msg { min-height: 18px; font-size: 12px; color: var(--amber); }
+    @media (max-width: 520px) {
+      .uploader { grid-template-columns: 1fr; }
+      .cat-row { grid-template-columns: 52px 1fr; }
+      .cat-row .cat-count, .cat-row .cat-tools { grid-column: 2; justify-self: start; text-align: left; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="container top-bar">
+      <div>
+        <h1>Panel de inventario</h1>
+        <small>Vame Technologies · Edita el catálogo y descarga <code>productos.json</code></small>
+      </div>
+      <div class="top-actions">
+        <span class="dirty" id="dirty" hidden>Cambios sin descargar</span>
+        <button class="btn btn-ghost" type="button" id="btn-import">Importar JSON</button>
+        <button class="btn btn-primary" type="button" id="btn-download" disabled>Descargar productos.json</button>
+        <input type="file" id="file" accept="application/json,.json" hidden>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="banner" id="banner" role="status" hidden></div>
+
+    <p class="how">
+      <strong>Cómo se publica:</strong> edita aquí, pulsa <strong>Descargar productos.json</strong> y sube ese archivo al hosting, en la misma carpeta que <code>tienda.html</code>, reemplazando el anterior.
+      Las imágenes que cargues viajan dentro de ese mismo archivo. Este panel no cambia nada en la tienda por sí solo: solo el archivo que subas.
+    </p>
+
+    <section class="stats" aria-label="Resumen">
+      <div class="stat"><small>Productos</small><strong id="s-total">0</strong></div>
+      <div class="stat"><small>Visibles en tienda</small><strong id="s-visible">0</strong></div>
+      <div class="stat"><small>Agotados</small><strong id="s-out">0</strong></div>
+      <div class="stat"><small>Valor del inventario</small><strong id="s-value">Q0</strong></div>
+      <div class="stat" id="s-size-card"><small>Tamaño del archivo</small><strong id="s-size">0 KB</strong></div>
+    </section>
+    <p class="hint" id="size-note" hidden style="margin-top:8px"></p>
+
+    <div class="toolbar">
+      <label class="sr-only" for="filter-q">Buscar</label>
+      <input id="filter-q" type="search" placeholder="Buscar producto…" autocomplete="off">
+      <label class="sr-only" for="filter-cat">Categoría</label>
+      <select id="filter-cat"></select>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost" type="button" id="btn-cats">Categorías</button>
+      <button class="btn btn-blue" type="button" id="btn-new">+ Nuevo producto</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Producto</th>
+            <th scope="col" class="num">Precio</th>
+            <th scope="col" class="num">Stock</th>
+            <th scope="col">Visible</th>
+            <th scope="col"><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden></div>
+    </div>
+  </main>
+
+  <!-- ===================== PRODUCTO ===================== -->
+  <dialog id="dlg" aria-labelledby="dlg-title">
+    <form class="form" id="form" novalidate>
+      <h2 id="dlg-title">Nuevo producto</h2>
+
+      <div class="field" data-field="name">
+        <label for="f-name">Nombre</label>
+        <input id="f-name" name="name" type="text" required aria-describedby="e-name">
+        <p class="field-error" id="e-name">Escribe el nombre del producto.</p>
+      </div>
+
+      <div class="field" data-field="newName">
+        <label for="f-category">Categoría</label>
+        <select id="f-category" name="category"></select>
+        <div class="new-cat" id="new-cat" hidden>
+          <input class="icon-in" id="f-newicon" list="emojis" maxlength="4" placeholder="📦" aria-label="Icono de la nueva categoría">
+          <input id="f-newname" type="text" placeholder="Nombre de la categoría" aria-label="Nombre de la nueva categoría" aria-describedby="e-newname">
+        </div>
+        <p class="field-error" id="e-newname">Escribe el nombre de la nueva categoría.</p>
+      </div>
+
+      <div class="row2">
+        <div class="field" data-field="price">
+          <label for="f-price">Precio (Q)</label>
+          <input id="f-price" name="price" type="number" inputmode="decimal" min="0" step="0.01" required aria-describedby="e-price">
+          <p class="field-error" id="e-price">Ingresa un precio mayor a 0.</p>
+        </div>
+        <div class="field" data-field="stock">
+          <label for="f-stock">Stock</label>
+          <input id="f-stock" name="stock" type="number" inputmode="numeric" min="0" step="1" required aria-describedby="e-stock">
+          <p class="field-error" id="e-stock">Ingresa un número de 0 o más.</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-description">Descripción</label>
+        <textarea id="f-description" name="description"></textarea>
+      </div>
+
+      <div class="field">
+        <span class="label">Imagen</span>
+        <div class="uploader">
+          <div class="preview" id="preview">Arrastra una foto aquí</div>
+          <div class="uploader-actions">
+            <div class="row">
+              <button class="btn btn-ghost btn-sm" type="button" id="btn-upload">Subir imagen</button>
+              <button class="btn btn-danger btn-sm" type="button" id="btn-remove-img" hidden>Quitar</button>
+            </div>
+            <p class="hint" id="img-info">También puedes pegarla con Ctrl+V. Se ajusta y comprime sola.</p>
+            <p class="msg" id="img-msg" role="alert"></p>
+          </div>
+          <input type="file" id="f-file" accept="image/*" hidden>
+        </div>
+        <details class="alt" id="alt">
+          <summary>o usar una ruta / URL de imagen</summary>
+          <input id="f-image" type="text" placeholder="img/productos/router.webp o https://…" aria-label="Ruta o URL de la imagen">
+        </details>
+      </div>
+
+      <label class="check"><input type="checkbox" id="f-visible" name="visible" checked> Mostrar en la tienda</label>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" type="button" id="dlg-cancel">Cancelar</button>
+        <button class="btn btn-primary" type="submit" id="dlg-save">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===================== CATEGORÍAS ===================== -->
+  <dialog id="dlg-cats" aria-labelledby="cats-title">
+    <div class="form">
+      <h2 id="cats-title">Categorías</h2>
+      <p class="hint">Este es el orden de los botones en la tienda. Una categoría sin productos visibles no se muestra. Solo se puede eliminar una categoría vacía.</p>
+      <ul class="cat-list" id="cat-list"></ul>
+      <p class="msg" id="cat-msg" role="alert"></p>
+      <div class="cat-add">
+        <input class="icon-in" id="new-icon" list="emojis" maxlength="4" placeholder="📦" aria-label="Icono">
+        <input id="new-name" type="text" placeholder="Nueva categoría" aria-label="Nombre de la nueva categoría">
+        <button class="btn btn-blue btn-sm" type="button" id="btn-add-cat">Agregar</button>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" type="button" id="cats-close">Listo</button></div>
+    </div>
+  </dialog>
+
+  <datalist id="emojis">
+    <option value="💻"><option value="🖥️"><option value="📡"><option value="💾"><option value="⌨️"><option value="🔌">
+    <option value="🛡️"><option value="📦"><option value="🖨️"><option value="📱"><option value="🎧"><option value="📷">
+    <option value="🔋"><option value="🖱️"><option value="📺"><option value="🎮"><option value="🧰"><option value="📶">
+    <option value="🔦"><option value="🎙️"><option value="🕹️"><option value="💡"><option value="🔧"><option value="🧲">
+  </datalist>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* =====================================================
+         1. CONFIGURACIÓN
+         ===================================================== */
+      const CONFIG = {
+        catalogUrl: 'productos.json',
+        draftKey: 'vame_admin_borrador',
+        imageMaxSide: 800,      // px del lado mayor
+        imageTargetKB: 80,      // peso objetivo por imagen
+        sizeWarnMB: 2,          // aviso si el catálogo supera este tamaño
+        defaultCategories: [
+          { nombre: 'Laptops', icono: '💻' }, { nombre: 'PCs', icono: '🖥️' }, { nombre: 'Redes', icono: '📡' },
+          { nombre: 'Almacenamiento', icono: '💾' }, { nombre: 'Accesorios', icono: '⌨️' },
+          { nombre: 'Cables', icono: '🔌' }, { nombre: 'Seguridad', icono: '🛡️' },
+        ],
+      };
+      const NEW_CAT = '__new__';
+
+      /* =====================================================
+         2. UTILIDADES
+         ===================================================== */
+      const $ = (sel, root = document) => root.querySelector(sel);
+      const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const money = (n) => 'Q' + Number(n).toLocaleString('es-GT', { maximumFractionDigits: 2 });
+      const fold = (s) => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[-_]/g, ' ').toLowerCase();
+      const today = () => new Date().toLocaleDateString('sv-SE'); // AAAA-MM-DD en hora local
+      const newId = () => Date.now().toString(36);
+      const sameName = (a, b) => fold(a).trim() === fold(b).trim();
+      const cleanIcon = (v) => Array.from(String(v || '').trim()).slice(0, 2).join('');
+      const formatSize = (bytes) => (bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`);
+      const isDataUrl = (u) => /^data:image\//i.test(u);
+      const defaultIcon = (name) => (CONFIG.defaultCategories.find((c) => sameName(c.nombre, name)) || {}).icono || '📦';
+
+      /* Solo rutas relativas, http(s) o imágenes incrustadas (nunca javascript:) */
+      function safeUrl(u) {
+        u = String(u || '').trim();
+        if (!u) return '';
+        if (/^data:image\/(webp|png|jpeg|gif);base64,[a-z0-9+/=]+$/i.test(u)) return u;
+        const scheme = u.match(/^([a-z][a-z0-9+.-]*):/i);
+        return !scheme || /^https?$/i.test(scheme[1]) ? u : '';
+      }
+
+      /* Acepta un array (formato anterior) o { actualizado, categorias, productos } */
+      function normalizeCatalog(raw) {
+        const list = Array.isArray(raw) ? raw : (raw && raw.productos);
+        if (!Array.isArray(list)) throw new Error('Formato no válido');
+
+        const categories = [];
+        const addCategory = (name, icon) => {
+          name = String(name || '').trim();
+          if (!name || categories.some((c) => sameName(c.nombre, name))) return;
+          categories.push({ nombre: name, icono: cleanIcon(icon) || defaultIcon(name) });
+        };
+        const provided = (!Array.isArray(raw) && Array.isArray(raw.categorias)) ? raw.categorias : [];
+        provided.forEach((c) => c && addCategory(c.nombre, c.icono));
+
+        const products = list
+          .filter((p) => p && typeof p.name === 'string' && p.name.trim())
+          .map((p, i) => ({
+            id: String(p.id ?? newId() + i),
+            name: p.name.trim(),
+            category: String(p.category || 'Accesorios').trim(),
+            price: Math.max(0, Number(p.price) || 0),
+            stock: Math.max(0, Math.floor(Number(p.stock) || 0)),
+            description: String(p.description || ''),
+            imageUrl: safeUrl(p.imageUrl),
+            visible: p.visible !== false,
+          }));
+
+        products.forEach((p) => addCategory(p.category));
+        products.forEach((p) => { p.category = categories.find((c) => sameName(c.nombre, p.category)).nombre; });
+        return { products, categories };
+      }
+
+      /* =====================================================
+         3. ESTADO Y BORRADOR LOCAL
+         ===================================================== */
+      const state = { products: [], categories: [], dirty: false, editingId: null, formImage: '', query: '', category: '' };
+      let draftWarned = false;
+
+      function saveDraft() {
+        try {
+          localStorage.setItem(CONFIG.draftKey, JSON.stringify({ dirty: state.dirty, savedAt: Date.now(), products: state.products, categorias: state.categories }));
+        } catch (e) {
+          if (state.dirty && !draftWarned) {
+            draftWarned = true;
+            showBanner('No se pudo guardar el borrador automático (hay demasiadas imágenes). <strong>Descarga tu productos.json</strong> para no perder los cambios.', true);
+          }
+        }
+      }
+      function readDraft() {
+        try {
+          const d = JSON.parse(localStorage.getItem(CONFIG.draftKey));
+          if (d && d.dirty && Array.isArray(d.products)) return d;
+        } catch (e) { /* sin borrador */ }
+        return null;
+      }
+      function setDirty(value) {
+        state.dirty = value;
+        $('#dirty').hidden = !value;
+        saveDraft();
+      }
+      function commit({ products = state.products, categories = state.categories } = {}) {
+        state.products = products;
+        state.categories = categories;
+        setDirty(true);
+        render();
+        if ($('#dlg-cats').open) renderCatList();
+      }
+
+      const catIcon = (name) => (state.categories.find((c) => c.nombre === name) || {}).icono || '📦';
+      const countIn = (name) => state.products.filter((p) => p.category === name).length;
+      const payload = () => ({ actualizado: today(), categorias: state.categories, productos: state.products });
+
+      /* =====================================================
+         4. PANTALLA PRINCIPAL
+         ===================================================== */
+      const banner = $('#banner');
+      function showBanner(html, warn = false) {
+        banner.innerHTML = html;
+        banner.classList.toggle('warn', warn);
+        banner.hidden = false;
+      }
+
+      const thumbHtml = (p) => (p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="" loading="lazy">` : catIcon(p.category));
+
+      function rowHtml(p) {
+        return `
+          <tr class="${p.visible ? '' : 'hidden-row'}">
+            <td>
+              <div class="pcell">
+                <div class="pthumb">${thumbHtml(p)}</div>
+                <div><div class="pname">${esc(p.name)}</div><div class="pmeta">${esc(catIcon(p.category))} ${esc(p.category)} · ID ${esc(p.id.slice(-4))}</div></div>
+              </div>
+            </td>
+            <td class="num">${money(p.price)}</td>
+            <td class="num">
+              <span class="stock-cell">
+                <button class="step" type="button" data-action="dec" data-id="${esc(p.id)}" aria-label="Restar una unidad de ${esc(p.name)}">−</button>
+                <output class="${p.stock === 0 ? 'zero' : ''}">${p.stock}</output>
+                <button class="step" type="button" data-action="inc" data-id="${esc(p.id)}" aria-label="Sumar una unidad a ${esc(p.name)}">+</button>
+              </span>
+            </td>
+            <td><input type="checkbox" data-action="visible" data-id="${esc(p.id)}" ${p.visible ? 'checked' : ''} aria-label="Mostrar ${esc(p.name)} en la tienda"></td>
+            <td class="actions">
+              <button class="btn btn-ghost btn-sm" type="button" data-action="edit" data-id="${esc(p.id)}">Editar</button>
+              <button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${esc(p.id)}">Eliminar</button>
+            </td>
+          </tr>`;
+      }
+
+      function renderFilter() {
+        const sel = $('#filter-cat');
+        sel.innerHTML = '<option value="">Todas las categorías</option>' +
+          state.categories.map((c) => `<option value="${esc(c.nombre)}">${esc(c.icono)} ${esc(c.nombre)} (${countIn(c.nombre)})</option>`).join('');
+        if (!state.categories.some((c) => c.nombre === state.category)) state.category = '';
+        sel.value = state.category;
+      }
+
+      function renderStats() {
+        $('#s-total').textContent = state.products.length;
+        $('#s-visible').textContent = state.products.filter((p) => p.visible).length;
+        $('#s-out').textContent = state.products.filter((p) => p.stock === 0).length;
+        $('#s-value').textContent = money(state.products.reduce((n, p) => n + p.price * p.stock, 0));
+
+        const bytes = new Blob([JSON.stringify(payload())]).size;
+        $('#s-size').textContent = formatSize(bytes);
+        const heavy = bytes > CONFIG.sizeWarnMB * 1048576;
+        $('#s-size-card').classList.toggle('warn', heavy);
+        const note = $('#size-note');
+        note.hidden = !heavy;
+        if (heavy) note.textContent = `El archivo supera ${CONFIG.sizeWarnMB} MB y la tienda tardará más en cargar. Usa imágenes más livianas o sube los archivos al hosting y usa su ruta.`;
+      }
+
+      function render() {
+        const q = fold(state.query.trim());
+        const list = state.products.filter((p) =>
+          (!state.category || p.category === state.category) &&
+          (!q || fold(`${p.name} ${p.category} ${p.description}`).includes(q)));
+
+        $('#rows').innerHTML = list.map(rowHtml).join('');
+        const empty = $('#empty');
+        empty.hidden = list.length > 0;
+        if (!list.length) {
+          empty.innerHTML = state.products.length
+            ? '<strong>Sin resultados</strong>Prueba con otra búsqueda o categoría.'
+            : '<strong>No hay productos cargados</strong>Pulsa «Importar JSON» y elige tu <code>productos.json</code>, o crea el primero con «Nuevo producto».';
+        }
+        $('#btn-download').disabled = state.products.length === 0;
+        renderFilter();
+        renderStats();
+      }
+
+      /* =====================================================
+         5. ACCIONES SOBRE PRODUCTOS
+         ===================================================== */
+      const byId = (id) => state.products.find((p) => p.id === id);
+      const update = (id, patch) => commit({ products: state.products.map((p) => (p.id === id ? { ...p, ...patch } : p)) });
+
+      const actions = {
+        inc: (id) => update(id, { stock: byId(id).stock + 1 }),
+        dec: (id) => update(id, { stock: Math.max(0, byId(id).stock - 1) }),
+        edit: (id) => openForm(id),
+        delete: (id) => {
+          const p = byId(id);
+          if (confirm(`¿Eliminar «${p.name}»? Dejará de estar en el catálogo cuando subas el nuevo archivo.`)) {
+            commit({ products: state.products.filter((x) => x.id !== id) });
+          }
+        },
+      };
+
+      $('#rows').addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (btn && actions[btn.dataset.action]) actions[btn.dataset.action](btn.dataset.id);
+      });
+      $('#rows').addEventListener('change', (e) => {
+        const box = e.target.closest('input[data-action="visible"]');
+        if (box) update(box.dataset.id, { visible: box.checked });
+      });
+      $('#filter-q').addEventListener('input', (e) => { state.query = e.target.value; render(); });
+      $('#filter-cat').addEventListener('change', (e) => { state.category = e.target.value; render(); });
+
+      /* =====================================================
+         6. IMÁGENES (ajuste y compresión en el navegador)
+         ===================================================== */
+      const toBlob = (canvas, type, quality) => new Promise((res) => canvas.toBlob(res, type, quality));
+      const blobToDataUrl = (blob) => new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = () => rej(new Error('No se pudo leer la imagen.'));
+        r.readAsDataURL(blob);
+      });
+
+      async function processImage(file) {
+        if (!file || !file.type.startsWith('image/')) throw new Error('Elige un archivo de imagen (JPG, PNG o WebP).');
+        let bitmap;
+        try { bitmap = await createImageBitmap(file); }
+        catch (e) { throw new Error('No se pudo leer esa imagen. Prueba con JPG, PNG o WebP.'); }
+
+        // Si sigue pesando de más, se reduce primero la calidad y luego las dimensiones
+        let blob = null;
+        for (const side of [CONFIG.imageMaxSide, 640, 480]) {
+          const scale = Math.min(1, side / Math.max(bitmap.width, bitmap.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+          for (const quality of [0.82, 0.68, 0.52]) {
+            blob = await toBlob(canvas, 'image/webp', quality);
+            if (!blob || blob.type !== 'image/webp') break; // navegador sin WebP
+            if (blob.size <= CONFIG.imageTargetKB * 1024) break;
+          }
+          if (!blob || blob.type !== 'image/webp' || blob.size <= CONFIG.imageTargetKB * 1024) {
+            if (!blob || blob.type !== 'image/webp') blob = await toBlob(canvas, 'image/jpeg', 0.8);
+            break;
+          }
+        }
+        if (bitmap.close) bitmap.close();
+        return blobToDataUrl(blob);
+      }
+
+      const imgMsg = (text) => { $('#img-msg').textContent = text || ''; };
+
+      function setImage(value) {
+        state.formImage = value || '';
+        const preview = $('#preview');
+        preview.innerHTML = value ? `<img src="${esc(value)}" alt="Vista previa de la imagen">` : 'Arrastra una foto aquí';
+        $('#btn-remove-img').hidden = !value;
+        $('#btn-upload').textContent = value ? 'Cambiar imagen' : 'Subir imagen';
+        $('#f-image').value = value && !isDataUrl(value) ? value : '';
+        $('#img-info').textContent = !value
+          ? 'También puedes pegarla con Ctrl+V. Se ajusta y comprime sola.'
+          : isDataUrl(value)
+            ? `Imagen cargada · ${formatSize(Math.round(value.length * 0.75))}`
+            : 'Usando una ruta o URL externa.';
+      }
+
+      async function loadImageFile(file) {
+        imgMsg('');
+        $('#img-info').textContent = 'Procesando imagen…';
+        try { setImage(await processImage(file)); }
+        catch (err) { setImage(state.formImage); imgMsg(err.message); }
+      }
+
+      $('#btn-upload').addEventListener('click', () => $('#f-file').click());
+      $('#f-file').addEventListener('change', (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) loadImageFile(f); });
+      $('#btn-remove-img').addEventListener('click', () => { imgMsg(''); setImage(''); });
+      $('#f-image').addEventListener('input', (e) => {
+        const url = safeUrl(e.target.value);
+        state.formImage = url;
+        imgMsg(e.target.value.trim() && !url ? 'Esa ruta no es válida.' : '');
+        const preview = $('#preview');
+        preview.innerHTML = url ? `<img src="${esc(url)}" alt="Vista previa de la imagen">` : 'Arrastra una foto aquí';
+        $('#btn-remove-img').hidden = !url;
+      });
+
+      const preview = $('#preview');
+      ['dragenter', 'dragover'].forEach((ev) => preview.addEventListener(ev, (e) => { e.preventDefault(); preview.classList.add('drag'); }));
+      ['dragleave', 'drop'].forEach((ev) => preview.addEventListener(ev, (e) => { e.preventDefault(); preview.classList.remove('drag'); }));
+      preview.addEventListener('drop', (e) => { const f = e.dataTransfer.files[0]; if (f) loadImageFile(f); });
+      $('#dlg').addEventListener('paste', (e) => {
+        const file = [...(e.clipboardData ? e.clipboardData.files : [])].find((f) => f.type.startsWith('image/'));
+        if (file) { e.preventDefault(); loadImageFile(file); }
+      });
+
+      /* =====================================================
+         7. FORMULARIO DE PRODUCTO
+         ===================================================== */
+      const dlg = $('#dlg');
+      const form = $('#form');
+
+      function fillCategorySelect(selected) {
+        $('#f-category').innerHTML =
+          state.categories.map((c) => `<option value="${esc(c.nombre)}">${esc(c.icono)} ${esc(c.nombre)}</option>`).join('') +
+          `<option value="${NEW_CAT}">➕ Nueva categoría…</option>`;
+        $('#f-category').value = state.categories.some((c) => c.nombre === selected) ? selected : (state.categories[0] ? state.categories[0].nombre : NEW_CAT);
+        toggleNewCategory();
+      }
+
+      function toggleNewCategory() {
+        const isNew = $('#f-category').value === NEW_CAT;
+        $('#new-cat').hidden = !isNew;
+        if (isNew) $('#f-newname').focus();
+      }
+      $('#f-category').addEventListener('change', toggleNewCategory);
+
+      function openForm(id = null) {
+        state.editingId = id;
+        const p = id ? byId(id) : { name: '', category: state.categories[0] ? state.categories[0].nombre : '', price: '', stock: 0, description: '', imageUrl: '', visible: true };
+        $('#dlg-title').textContent = id ? 'Editar producto' : 'Nuevo producto';
+        form.name.value = p.name;
+        fillCategorySelect(p.category);
+        $('#f-newname').value = '';
+        $('#f-newicon').value = '';
+        form.price.value = p.price;
+        form.stock.value = p.stock;
+        form.description.value = p.description;
+        form.visible.checked = p.visible;
+        imgMsg('');
+        setImage(p.imageUrl);
+        $('#alt').open = !!p.imageUrl && !isDataUrl(p.imageUrl);
+        form.querySelectorAll('.field').forEach((f) => f.classList.remove('invalid'));
+        dlg.showModal();
+        form.name.focus();
+      }
+
+      function validate() {
+        const creating = $('#f-category').value === NEW_CAT;
+        const checks = {
+          name: form.name.value.trim().length > 0,
+          newName: !creating || $('#f-newname').value.trim().length > 0,
+          price: Number(form.price.value) > 0,
+          stock: form.stock.value !== '' && Number(form.stock.value) >= 0 && Number.isInteger(Number(form.stock.value)),
+        };
+        const focusTarget = { name: form.name, newName: $('#f-newname'), price: form.price, stock: form.stock };
+        let firstBad = null;
+        Object.entries(checks).forEach(([key, ok]) => {
+          $(`[data-field="${key}"]`).classList.toggle('invalid', !ok);
+          if (!ok && !firstBad) firstBad = focusTarget[key];
+        });
+        if (firstBad) firstBad.focus();
+        return !firstBad;
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!validate()) return;
+
+        let categories = state.categories;
+        let category = $('#f-category').value;
+        if (category === NEW_CAT) {
+          const name = $('#f-newname').value.trim();
+          const existing = categories.find((c) => sameName(c.nombre, name));
+          if (existing) category = existing.nombre;
+          else {
+            category = name;
+            categories = [...categories, { nombre: name, icono: cleanIcon($('#f-newicon').value) || defaultIcon(name) }];
+          }
+        }
+
+        const data = {
+          name: form.name.value.trim(),
+          category,
+          price: Number(form.price.value),
+          stock: Number(form.stock.value),
+          description: form.description.value.trim(),
+          imageUrl: state.formImage,
+          visible: form.visible.checked,
+        };
+        const products = state.editingId
+          ? state.products.map((p) => (p.id === state.editingId ? { ...p, ...data } : p))
+          : [{ id: newId(), ...data }, ...state.products];
+        commit({ products, categories });
+        dlg.close();
+      });
+      $('#dlg-cancel').addEventListener('click', () => dlg.close());
+      dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+      $('#btn-new').addEventListener('click', () => openForm());
+
+      /* =====================================================
+         8. GESTOR DE CATEGORÍAS
+         ===================================================== */
+      const catsDlg = $('#dlg-cats');
+      const catMsg = (text) => { $('#cat-msg').textContent = text || ''; };
+
+      function renderCatList() {
+        const last = state.categories.length - 1;
+        $('#cat-list').innerHTML = state.categories.map((c, i) => {
+          const n = countIn(c.nombre);
+          return `
+            <li class="cat-row" data-index="${i}">
+              <input class="icon-in" data-field="icon" value="${esc(c.icono)}" list="emojis" maxlength="4" aria-label="Icono de ${esc(c.nombre)}">
+              <input data-field="name" value="${esc(c.nombre)}" aria-label="Nombre de la categoría">
+              <span class="cat-count">${n} ${n === 1 ? 'producto' : 'productos'}</span>
+              <span class="cat-tools">
+                <button class="step" type="button" data-cat-action="up" ${i === 0 ? 'disabled' : ''} aria-label="Subir ${esc(c.nombre)}">↑</button>
+                <button class="step" type="button" data-cat-action="down" ${i === last ? 'disabled' : ''} aria-label="Bajar ${esc(c.nombre)}">↓</button>
+                <button class="btn btn-danger btn-sm" type="button" data-cat-action="delete" ${n > 0 ? 'disabled title="Tiene productos: muévelos antes de eliminarla"' : ''}>Eliminar</button>
+              </span>
+            </li>`;
+        }).join('');
+      }
+
+      function addCategory(name, icon) {
+        name = name.trim();
+        if (!name) { catMsg('Escribe el nombre de la categoría.'); return false; }
+        if (state.categories.some((c) => sameName(c.nombre, name))) { catMsg(`Ya existe la categoría «${name}».`); return false; }
+        catMsg('');
+        commit({ categories: [...state.categories, { nombre: name, icono: cleanIcon(icon) || defaultIcon(name) }] });
+        return true;
+      }
+
+      $('#btn-add-cat').addEventListener('click', () => {
+        if (addCategory($('#new-name').value, $('#new-icon').value)) { $('#new-name').value = ''; $('#new-icon').value = ''; $('#new-name').focus(); }
+      });
+      $('#new-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#btn-add-cat').click(); } });
+
+      $('#cat-list').addEventListener('change', (e) => {
+        const row = e.target.closest('.cat-row');
+        if (!row) return;
+        const i = Number(row.dataset.index);
+        const current = state.categories[i];
+        if (e.target.dataset.field === 'icon') {
+          catMsg('');
+          commit({ categories: state.categories.map((c, k) => (k === i ? { ...c, icono: cleanIcon(e.target.value) || defaultIcon(c.nombre) } : c)) });
+        } else if (e.target.dataset.field === 'name') {
+          const name = e.target.value.trim();
+          if (!name) { catMsg('El nombre no puede quedar vacío.'); renderCatList(); return; }
+          if (state.categories.some((c, k) => k !== i && sameName(c.nombre, name))) { catMsg(`Ya existe la categoría «${name}».`); renderCatList(); return; }
+          catMsg('');
+          commit({
+            categories: state.categories.map((c, k) => (k === i ? { ...c, nombre: name } : c)),
+            products: state.products.map((p) => (p.category === current.nombre ? { ...p, category: name } : p)),
+          });
+        }
+      });
+
+      $('#cat-list').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-cat-action]');
+        if (!btn) return;
+        const i = Number(btn.closest('.cat-row').dataset.index);
+        const cats = [...state.categories];
+        catMsg('');
+        if (btn.dataset.catAction === 'delete') {
+          if (countIn(cats[i].nombre) > 0) return;
+          cats.splice(i, 1);
+        } else {
+          const j = btn.dataset.catAction === 'up' ? i - 1 : i + 1;
+          if (j < 0 || j >= cats.length) return;
+          [cats[i], cats[j]] = [cats[j], cats[i]];
+        }
+        commit({ categories: cats });
+      });
+
+      $('#btn-cats').addEventListener('click', () => { catMsg(''); renderCatList(); catsDlg.showModal(); });
+      $('#cats-close').addEventListener('click', () => catsDlg.close());
+      catsDlg.addEventListener('click', (e) => { if (e.target === catsDlg) catsDlg.close(); });
+
+      /* =====================================================
+         9. IMPORTAR Y DESCARGAR
+         ===================================================== */
+      $('#btn-import').addEventListener('click', () => $('#file').click());
+      $('#file').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        e.target.value = '';
+        if (!file) return;
+        try {
+          const catalog = normalizeCatalog(JSON.parse(await file.text()));
+          if (!catalog.products.length) throw new Error('Sin productos');
+          if (state.products.length && !confirm(`Se reemplazarán los ${state.products.length} productos actuales por los ${catalog.products.length} del archivo. ¿Continuar?`)) return;
+          banner.hidden = true;
+          commit(catalog);
+          setDirty(false);
+          showBanner(`Se importaron ${catalog.products.length} productos desde <strong>${esc(file.name)}</strong>.`);
+        } catch (err) {
+          showBanner('No se pudo leer el archivo. Elige un <code>productos.json</code> válido.', true);
+        }
+      });
+
+      $('#btn-download').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(payload(), null, 2) + '\n'], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'productos.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        setDirty(false);
+        showBanner('Descargado. Ahora sube <strong>productos.json</strong> al hosting, junto a <code>tienda.html</code>, para publicar los cambios.');
+      });
+
+      window.addEventListener('beforeunload', (e) => { if (state.dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+      /* =====================================================
+         10. ARRANQUE
+         ===================================================== */
+      async function init() {
+        const draft = readDraft();
+        if (draft) {
+          Object.assign(state, normalizeCatalog({ productos: draft.products, categorias: draft.categorias }));
+          state.dirty = true;
+          $('#dirty').hidden = false;
+          const when = new Date(draft.savedAt).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short' });
+          showBanner(`Se restauró un borrador sin descargar (${esc(when)}). <button type="button" id="discard">Descartar y empezar de nuevo</button>`, true);
+          $('#discard').addEventListener('click', () => {
+            try { localStorage.removeItem(CONFIG.draftKey); } catch (e) { /* nada */ }
+            location.reload();
+          });
+        } else {
+          try {
+            const res = await fetch(CONFIG.catalogUrl, { cache: 'no-cache' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            Object.assign(state, normalizeCatalog(await res.json()));
+          } catch (err) {
+            state.categories = CONFIG.defaultCategories.map((c) => ({ ...c }));
+            showBanner('No se pudo cargar <code>productos.json</code> automáticamente (normal si abriste este archivo desde tu computadora). Pulsa <strong>Importar JSON</strong> y elige tu copia más reciente para no perder cambios.', true);
+          }
+        }
+        render();
+      }
+      init();
+    })();
+  </script>
+</body>
+</html>
